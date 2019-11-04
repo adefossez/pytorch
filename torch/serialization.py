@@ -287,11 +287,12 @@ def _save(obj, f, pickle_module, pickle_protocol):
             source_file = source = None
             try:
                 source_lines, _, source_file = get_source_lines_and_file(obj)
-                source = ''.join(obj)
-            except Exception:  # saving the source is optional, so we can ignore any errors
+            except OSError:  # saving the source is optional, so we can ignore any errors
                 warnings.warn("Couldn't retrieve source code for container of "
                               "type " + obj.__name__ + ". It won't be checked "
                               "for correctness upon loading.")
+            else:
+                source = ''.join(source_lines)
             return ('module', obj, source_file, source)
         elif torch.is_storage(obj):
             storage_type = normalize_storage_type(type(obj))
